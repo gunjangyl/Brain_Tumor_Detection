@@ -1,0 +1,145 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Clinical MRI Analysis Dashboard</title>
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <style>
+        body { background-color: #f4f6f9; font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; }
+        .dashboard-header { background: #004085; color: white; padding: 20px 0; margin-bottom: 30px; box-shadow: 0 4px 6px rgba(0,0,0,0.1); }
+        .card { border-radius: 12px; box-shadow: 0 4px 15px rgba(0,0,0,0.05); border: none; margin-bottom: 25px; }
+        .card-header { background-color: white; border-bottom: 2px solid #f0f2f5; font-weight: 600; font-size: 1.1rem; }
+        .result-badge { font-size: 1.5rem; padding: 10px 20px; border-radius: 8px; font-weight: bold; }
+        .confidence-text { font-size: 1.2rem; color: #6c757d; }
+        .mri-display { border-radius: 8px; border: 1px solid #dee2e6; max-height: 350px; object-fit: contain; width: 100%; background: black; }
+        .footer { margin-top: 50px; padding: 20px 0; color: #6c757d; border-top: 1px solid #dee2e6; }
+    </style>
+</head>
+<body>
+
+    <div class="dashboard-header text-center">
+        <h2>MRI Diagnostic AI System — Clinical View</h2>
+        <p class="mb-0">Powered by EfficientNetB0 & Grad-CAM Explainability</p>
+    </div>
+
+    <div class="container">
+        <!-- Diagnostic Summary Row -->
+        <div class="row">
+            <div class="col-12">
+                <div class="card text-center p-4">
+                    <h5 class="text-uppercase text-muted mb-2">Automated Finding</h5>
+                    <div>
+                        <span class="result-badge 
+                            {% if pred_class == 'No Tumor' %}bg-success text-white
+                            {% elif pred_class == 'Model Not Trained Yet' %}bg-warning text-dark
+                            {% else %}bg-danger text-white{% endif %}">
+                            {{ pred_class }}
+                        </span>
+                    </div>
+                    {% if pred_class != 'Model Not Trained Yet' %}
+                    <div class="confidence-text mt-3">
+                        AI Confidence Score: <strong>{{ confidence }}%</strong>
+                    </div>
+                    {% else %}
+                    <div class="text-danger mt-3">
+                        <small>Warning: Model is currently training in the background. Predictions are simulated.</small>
+                    </div>
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+
+        <!-- Imaging Row -->
+        <div class="row">
+            <div class="col-md-6">
+                <div class="card h-100">
+                    <div class="card-header text-center">Original MRI Scan</div>
+                    <div class="card-body text-center">
+                        <img src="{{ url_for('static', filename=image_name) }}" class="mri-display alt="Original MRI">
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-6">
+                <div class="card h-100">
+                    <div class="card-header text-center d-flex justify-content-between align-items-center">
+                        <span>Explainable AI (Grad-CAM)</span>
+                        <span class="badge badge-primary">Model Focus</span>
+                    </div>
+                    <div class="card-body text-center">
+                        <img src="{{ url_for('static', filename=heatmap) }}" class="mri-display" alt="Grad-CAM Heatmap">
+                        <p class="text-muted small mt-2 mb-0">Red areas indicate regions heavily influencing the AI's decision.</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Probabilities Chart Row -->
+        <div class="row">
+            <div class="col-12">
+                <div class="card">
+                    <div class="card-header">Diagnostic Probability Distribution</div>
+                    <div class="card-body">
+                        <canvas id="probChart" height="80"></canvas>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="text-center mt-4">
+            <a href="/" class="btn btn-outline-primary btn-lg px-5">Analyze Another Scan</a>
+        </div>
+
+    </div>
+
+    <footer class="footer text-center">
+        <div class="container">
+            <small>Research Prototype. Not intended for primary clinical diagnosis without physician oversight.</small>
+        </div>
+    </footer>
+
+    <!-- Chart.js Logic -->
+    <script>
+        const ctx = document.getElementById('probChart').getContext('2d');
+        const probabilities = {{ probabilities | tojson }};
+        
+        new Chart(ctx, {
+            type: 'bar',
+            data: {
+                labels: ['Glioma', 'Meningioma', 'No Tumor', 'Pituitary'],
+                datasets: [{
+                    label: 'Probability (%)',
+                    data: probabilities,
+                    backgroundColor: [
+                        'rgba(220, 53, 69, 0.7)',  // Danger/Red for tumors
+                        'rgba(253, 126, 20, 0.7)', // Orange
+                        'rgba(40, 167, 69, 0.7)',  // Success/Green for normal
+                        'rgba(111, 66, 193, 0.7)'  // Purple
+                    ],
+                    borderColor: [
+                        'rgb(220, 53, 69)',
+                        'rgb(253, 126, 20)',
+                        'rgb(40, 167, 69)',
+                        'rgb(111, 66, 193)'
+                    ],
+                    borderWidth: 1
+                }]
+            },
+            options: {
+                responsive: true,
+                scales: {
+                    y: {
+                        beginAtZero: true,
+                        max: 100,
+                        title: { display: true, text: 'Confidence (%)' }
+                    }
+                },
+                plugins: {
+                    legend: { display: false }
+                }
+            }
+        });
+    </script>
+</body>
+</html>
