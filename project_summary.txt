@@ -1,0 +1,77 @@
+================================================================================
+BRIGHT-BRAIN: ADVANCED BRAIN TUMOR DETECTION & INTERPRETABILITY SYSTEM
+================================================================================
+
+1. PROJECT OVERVIEW
+--------------------------------------------------------------------------------
+This project is a state-of-the-art medical diagnostic tool designed to classify 
+Brain MRI scans into four distinct categories with high accuracy and clinical 
+interpretability. It combines a Deep Learning backend using EfficientNetB0 with 
+a modern, responsive React-based dashboard.
+
+2. CORE FEATURES
+--------------------------------------------------------------------------------
+*   Multi-Class Classification: Distinguishes between Glioma, Meningioma, 
+    Pituitary Tumors, and No Tumor (Healthy).
+*   Explainable AI (XAI): Integrates Grad-CAM (Gradient-weighted Class Activation 
+    Mapping) to generate heatmaps, showing the specific regions of the MRI scan 
+    that influenced the model's decision.
+*   Interactive 3D Visualization: Features a 3D brain model (Three.js) to 
+    visualize the scan in a spatial context.
+*   Professional Dashboard: A clean, glassmorphism-inspired UI for radiologists 
+    and clinicians.
+*   Real-time Analysis: Fast inference on CPU/GPU via as decoupled Flask API.
+
+3. TECHNICAL STACK
+--------------------------------------------------------------------------------
+BACKEND:
+- Framework: Flask (Python)
+- Deep Learning: TensorFlow / Keras
+- Model Architecture: EfficientNetB0 (Transfer Learning)
+- Image Processing: OpenCV, PIL, NumPy
+- Explainability: Grad-CAM Implementation
+- Port: 4555
+
+FRONTEND:
+- Library: React.js
+- Styling: TailwindCSS (with glassmorphism effects)
+- 3D Rendering: Three.js / React Three Fiber
+- Icons: Lucide-React
+- API Communication: Axios
+- Port: 3000
+
+4. MACHINE LEARNING DETAILS
+--------------------------------------------------------------------------------
+- Model Configuration: EfficientNetB0 base with custom top layers 
+  (GlobalAveragePooling2D, BatchNormalization, Dense 512, Dropout 0.5, 
+  Dense 256, Dropout 0.4, Dense 4 Softmax).
+- Weights Path: model/EfficientNet_model.h5
+- Dataset: Aggregated from figshare, SARTAJ, and Br35H (approx. 7,023 images).
+- Training Logic: Two-phase training (Freezing base layers then fine-tuning 
+  top convolutional blocks).
+- Reported Accuracy: ~82.3% on unseen test data.
+
+5. PROJECT STRUCTURE & KEY FILES
+--------------------------------------------------------------------------------
+- app.py: Main Flask entry point defining API routes (/api/predict).
+- predictor.py: Contains model loading, preprocessing, and Grad-CAM logic.
+- train_model.py / train_advanced.py: Scripts for training and fine-tuning.
+- frontend/: Full React source code.
+- model/: Directory for model artifacts and performance charts.
+- RESEARCH_PAPER_STRUCTURE.md: Detailed scientific documentation and metrics.
+- static/heatmaps/: Storage for generated Grad-CAM overlays.
+
+6. HOW IT WORKS (END-TO-END)
+--------------------------------------------------------------------------------
+1. User uploads a JPEG/PNG MRI scan via the React Uploader.
+2. The frontend sends a POST request to the Flask API (:4555/api/predict).
+3. `predictor.py` preprocesses the image (224x224) and runs inference.
+4. Grad-CAM generates a heatmap highlighting the detected tumor region.
+5. The API returns a JSON response with predicted class, confidence scores, 
+   and the URL to the generated heatmap.
+6. The React Dashboard displays the results and updates the 3D model status.
+
+================================================================================
+Generated on: 2026-03-07
+Project Name: Brain Tumor Detection Flask
+================================================================================
