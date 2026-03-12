@@ -10,25 +10,48 @@ Click on image to play :point_down:
 
 
 
-## Want to run this project in your computer
-- **Follow these Steps**
- 1. Open the terminal/CMD in project directory
- 2. Then create virtual environment using this command: 
-  
-      ```py -m venv env```
- 3. Activate virtual environment using: 
-  
-      ```env\Scripts\activate```
- 4. Install all the requirements using: 
-  
-      ```pip install -r requirements.txt```
-      
-      It will take some time to download till that take a sip of coffee :coffee: 
-      
- 5. After successful download of all above requirements, run the app using:
-      
-      ``` flask run ```
-      
-      Wait for few seconds till it shows like : ```Running on http://127.0.0.1:5000/ (Press CTRL+C to quit)```
- 6. Then open this URL in browser : http://127.0.0.1:5000/
- 7. Voila :thumbsup:
+## How to Run the Project
+
+- **Step 1: Open Terminal**
+  Open the terminal or command prompt in the project root directory.
+
+- **Step 2: Create Virtual Environment**
+  ```bash
+  # Windows
+  py -m venv env
+
+  # Mac/Linux
+  python3 -m venv env
+  ```
+
+- **Step 3: Activate Virtual Environment**
+  ```bash
+  # Windows (PowerShell)
+  .\env\Scripts\activate
+
+  # Windows (Command Prompt)
+  env\Scripts\activate
+
+  # Mac/Linux
+  source env/bin/activate
+  ```
+
+- **Step 4: Install Requirements**
+  ```bash
+  pip install -r requirements.txt
+  ```
+
+- **Step 5: Run the Flask Backend**
+  ```bash
+  flask run
+  ```
+  Check the API status at: http://127.0.0.1:5000/
+
+## Running the React Dashboard
+The frontend is located in the `frontend` directory.
+
+- **Step 6: Open a new terminal** window.
+- **Step 7: Navigate to the frontend directory:** `cd frontend`
+- **Step 8: Install dependencies (first time only):** `npm install`
+- **Step 9: Start the dashboard:** `npm start`
+- **Step 10: Access the UI at:** http://localhost:3000
